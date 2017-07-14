@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Built-By: Admin
+Build-Jdk: 1.8.0_45
+Class-Path: lib/litemc-core-1.11.2.jar lib/netty-all-4.1.8.Final.jar l
+ ib/litemc-common-1.11.2.jar lib/litemc-protocol-1.11.2.jar lib/logbac
+ k-classic-1.1.9.jar lib/logback-core-1.1.9.jar lib/slf4j-api-1.7.22.j
+ ar lib/guava-20.0.jar lib/gson-2.8.0.jar lib/flow-nbt-1.0.0.jar lib/j
+ ansi-1.16.jar
+Main-Class: pub.qiuf.litemc.app.Application
+Created-By: Maven Integration for Eclipse
+
