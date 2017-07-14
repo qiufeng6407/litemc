@@ -1,0 +1,2 @@
+alias cdl='cd ${HOME}/app/logs'
+alias cds='cd ${HOME}/app/shbin'
