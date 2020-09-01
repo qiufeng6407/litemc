@@ -6,7 +6,7 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.MoreObjects.ToStringHelper;
 import com.google.common.base.Optional;
 
-import pub.qiuf.litemc.common.bean.Slot;
+import pub.qiuf.litemc.common.bean.datatype.Slot;
 
 public class BaseWindow implements Window {
 

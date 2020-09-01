@@ -1,34 +1,67 @@
 package pub.qiuf.litemc.core.manager;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pub.qiuf.litemc.common.bean.ClientState;
 import pub.qiuf.litemc.common.bean.window.PlayerInventory;
 import pub.qiuf.litemc.common.bean.window.WindowAction;
+import pub.qiuf.litemc.core.context.GameContext;
 import pub.qiuf.litemc.core.network.MineCraftClient;
-import pub.qiuf.litemc.protocol.client.play.ClickWindowEvent;
-import pub.qiuf.litemc.protocol.client.play.ConfirmTransactionEvent_;
-import pub.qiuf.litemc.protocol.client.play.KeepAliveEvent_;
-import pub.qiuf.litemc.protocol.server.play.ConfirmTransactionEvent;
-import pub.qiuf.litemc.protocol.server.play.DisconnectEvent;
-import pub.qiuf.litemc.protocol.server.play.JoinGameEvent;
-import pub.qiuf.litemc.protocol.server.play.KeepAliveEvent;
-import pub.qiuf.litemc.protocol.server.play.PlayerPositionAndLookEvent;
-import pub.qiuf.litemc.protocol.server.play.RespawnEvent;
-import pub.qiuf.litemc.protocol.server.play.SetSlotEvent;
-import pub.qiuf.litemc.protocol.server.play.UpdateHealthEvent;
-import pub.qiuf.litemc.protocol.server.play.WindowItemsEvent;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
+import pub.qiuf.litemc.protocol.login.client.Login_Client_Disconnect;
+import pub.qiuf.litemc.protocol.play.client.Play_Client_JoinGame;
+import pub.qiuf.litemc.protocol.play.client.Play_Client_PlayerPositionAndLook;
+import pub.qiuf.litemc.protocol.play.client.Play_Client_UpdateHealth;
 
+import java.util.UUID;
+
+@Getter
 public class PlayerManager {
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+    @Setter
+    private String uuid;
+    private int gamemode;
+    private float health;
+    private int food;
+    private float foodSaturation;
+    private int dimension;
+    /** 初始死亡 */
+    @Setter
+    private boolean isDied = true;
+
+    protected final GameContext gameCtx;
+
+    public PlayerManager(GameContext gameCtx) {
+        this.gameCtx = gameCtx;
+    }
+
+    @Subscribe
+    public void on_Play_Client_JoinGame(Play_Client_JoinGame event) throws Exception {
+        logger.info("[Play JoinGame]");
+        this.gamemode = event.getGamemode();
+        this.dimension = event.getDimension();
+    }
+
+    @Subscribe
+    public void on_Play_Client_UpdateHealth(Play_Client_UpdateHealth event) throws Exception {
+        this.health = event.getHealth();
+        this.food = event.getFood();
+        this.foodSaturation = event.getFoodSaturation();
+        if (this.health == 0) {
+            isDied = true;
+        }
+    }
+
+    /*
 
     protected PlayerInventory inventory = new PlayerInventory();
     protected WindowAction windowAction;
-    protected boolean isPlayerRespawning = true;
     protected boolean isPlayerDied = false;
 
     protected final MineCraftClient mineCraftClient;
@@ -163,4 +196,5 @@ public class PlayerManager {
         return inventory;
     }
 
+     */
 }

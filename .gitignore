@@ -1,0 +1,16 @@
+.svn
+bin
+/work
+*.class
+.idea/
+target/
+*.iml
+*.classpath
+.settings
+.project
+logs
+*.orig
+*.DS_Store
+/.idea/.name
+/.idea/misc.xml
+/.idea/vcs.xml

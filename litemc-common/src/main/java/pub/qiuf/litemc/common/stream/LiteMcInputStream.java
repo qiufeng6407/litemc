@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import pub.qiuf.litemc.common.bean.Slot;
+import pub.qiuf.litemc.common.bean.datatype.Slot;
 import pub.qiuf.litemc.common.util.ByteUtils;
 import pub.qiuf.litemc.common.util.CommUtils;
 import pub.qiuf.litemc.common.util.GsonUtils;
@@ -104,14 +104,14 @@ public class LiteMcInputStream extends FilterInputStream implements LiteMcInput 
     public long readLong() throws IOException {
         byte[] readBuffer_8 = new byte[8];
         readFully(readBuffer_8, 0, 8);
-        return ByteUtils.getUnsignedLong(readBuffer_8);
+        return ByteUtils.decodeUnsignedLong(readBuffer_8);
     }
 
     @Override
     public long readUnsignedLong() throws IOException {
         byte[] readBuffer_8 = new byte[8];
         readFully(readBuffer_8, 0, 8);
-        return ByteUtils.getUnsignedLong(readBuffer_8);
+        return ByteUtils.decodeUnsignedLong(readBuffer_8);
     }
 
     @Override

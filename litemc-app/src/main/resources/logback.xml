@@ -13,7 +13,7 @@
 			<pattern>%d{HH:mm:ss.SSS} [%10t] [%5p] | %msg %n</pattern>
 		</encoder>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<FileNamePattern>${LOG_HOME}/%d{ddMMyyyy}.log</FileNamePattern>
+			<FileNamePattern>${LOG_HOME}/%d{yyyyMMdd}.log</FileNamePattern>
 			<MaxHistory>30</MaxHistory>
 		</rollingPolicy>
 		<triggeringPolicy
@@ -23,7 +23,7 @@
 	</appender>
 
 	<root level="INFO">
-		<!-- <appender-ref ref="STDOUT" /> -->
+		 <appender-ref ref="STDOUT" />
 		<appender-ref ref="FILE" />
 	</root>
 </configuration>

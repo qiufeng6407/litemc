@@ -2,7 +2,7 @@ package pub.qiuf.litemc.common.bean.window;
 
 import com.google.common.base.Optional;
 
-import pub.qiuf.litemc.common.bean.Slot;
+import pub.qiuf.litemc.common.bean.datatype.Slot;
 
 public interface Window {
     short getWindowId();

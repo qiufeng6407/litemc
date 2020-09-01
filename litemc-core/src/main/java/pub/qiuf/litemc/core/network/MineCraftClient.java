@@ -1,50 +1,17 @@
 package pub.qiuf.litemc.core.network;
 
-import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pub.qiuf.litemc.common.bean.ClientState;
-import pub.qiuf.litemc.common.bean.ServerInfo;
-import pub.qiuf.litemc.common.facade.Command;
-import pub.qiuf.litemc.common.protocol.ClientEvent;
-import pub.qiuf.litemc.common.protocol.ServerEvent;
-import pub.qiuf.litemc.core.manager.ChunkManager;
-import pub.qiuf.litemc.core.manager.PlayerManager;
-import pub.qiuf.litemc.core.manager.PositionManager;
-import pub.qiuf.litemc.core.manager.WindowManager;
-import pub.qiuf.litemc.core.network.codec.BasePacketDecoder;
-import pub.qiuf.litemc.core.network.codec.ClientEventEncoder;
-import pub.qiuf.litemc.core.network.codec.ServerEventDecoder;
-import pub.qiuf.litemc.protocol.client.handshake.HandshakeEvent;
-import pub.qiuf.litemc.protocol.client.login.LoginStartEvent;
-import pub.qiuf.litemc.protocol.server.login.DisconnectEvent;
-import pub.qiuf.litemc.protocol.server.login.LoginSuccessEvent;
-import pub.qiuf.litemc.protocol.server.login.SetCompressionEvent;
-
-import com.google.common.base.Preconditions;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-
 public class MineCraftClient extends Thread {
     protected final Logger logger = LoggerFactory.getLogger(getClass());
-
+/*
     protected final String playerName;
     protected final ServerInfo serverInfo;
     protected int threshold = -1;
     protected long clientTick = 1;
     protected short actionNumber = 1;
     protected ClientState clientState = ClientState.HANDSHAKE;
-    protected static final long CLIENT_FPS_TIME = 50 * 1000000;
 
     protected volatile boolean running = false;
     protected ChannelHandlerContext channelHandlerContext;
@@ -125,14 +92,14 @@ public class MineCraftClient extends Thread {
             registerServerEventObserver(positionManager);
             registerServerEventObserver(windowManager);
 
-            clientState = ClientState.HANDSHAKE;
-            channelHandlerContext.channel().writeAndFlush(
-                    new HandshakeEvent(serverInfo.getProtocolVersion(), serverInfo.getServerAddress(), serverInfo.getServerPort(), 2));
-            logger.info("handshaking...");
-
-            clientState = ClientState.LOGIN;
-            channelHandlerContext.channel().writeAndFlush(new LoginStartEvent(playerName));
-            logger.info("logining...");
+//            clientState = ClientState.HANDSHAKE;
+//            channelHandlerContext.channel().writeAndFlush(
+//                    new HandshakeEvent(serverInfo.getProtocolVersion(), serverInfo.getServerAddress(), serverInfo.getServerPort(), 2));
+//            logger.info("handshaking...");
+//
+//            clientState = ClientState.LOGIN;
+//            channelHandlerContext.channel().writeAndFlush(new LoginStartEvent(playerName));
+//            logger.info("logining...");
 
             running = true;
             while (running) {
@@ -252,5 +219,6 @@ public class MineCraftClient extends Thread {
     public void setChannelHandlerContext(ChannelHandlerContext channelHandlerContext) {
         this.channelHandlerContext = channelHandlerContext;
     }
+    */
 
 }

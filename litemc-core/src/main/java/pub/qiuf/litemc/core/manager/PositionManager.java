@@ -1,42 +1,112 @@
 package pub.qiuf.litemc.core.manager;
 
+import java.util.Queue;
+import java.util.concurrent.*;
+import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pub.qiuf.litemc.core.network.MineCraftClient;
-import pub.qiuf.litemc.protocol.client.play.PlayerEvent_;
-import pub.qiuf.litemc.protocol.client.play.PlayerLookEvent_;
-import pub.qiuf.litemc.protocol.client.play.PlayerPositionAndLookEvent_;
-import pub.qiuf.litemc.protocol.client.play.PlayerPositionEvent_;
-import pub.qiuf.litemc.protocol.client.play.TeleportConfirmEvent;
-import pub.qiuf.litemc.protocol.server.login.LoginSuccessEvent;
-import pub.qiuf.litemc.protocol.server.play.PlayerPositionAndLookEvent;
+import pub.qiuf.litemc.common.bean.ClientState;
+import pub.qiuf.litemc.core.context.GameContext;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.eventbus.Subscribe;
+import pub.qiuf.litemc.protocol.login.client.Login_Client_LoginSuccess;
+import pub.qiuf.litemc.protocol.play.client.Play_Client_PlayerPositionAndLook;
+import pub.qiuf.litemc.protocol.play.server.Play_Server_ClientStatus;
+import pub.qiuf.litemc.protocol.play.server.Play_Server_PlayerPosition;
+import pub.qiuf.litemc.protocol.play.server.Play_Server_PlayerPositionAndRotation;
+import pub.qiuf.litemc.protocol.play.server.Play_Server_TeleportConfirm;
 
-public class PositionManager {
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+@Getter
+public class PositionManager implements Runnable {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final GameContext gameCtx;
 
-    protected double x = 0;
-    protected double feetY = 0;
-    protected double z = 0;
-    protected float yaw = 0;
-    protected float pitch = 0;
-    protected boolean onGround = false;
-    protected long stationaryTick = 0;
-    protected boolean isPlayerPostionChanged = false;
-    protected boolean isPlayerLookChanged = false;
-    protected ReentrantLock playerPositionAndLookLock = new ReentrantLock(true);
+    private double x = 0;
+    private double feetY = 0;
+    private double z = 0;
+    private float yaw = 0;
+    private float pitch = 0;
+    private boolean onGround = false;
+    private long staticClientTick = 0; // 静止tick数
+    private boolean isPlayerPostionChanged = false;
+    private boolean isPlayerLookChanged = false;
 
-    protected final MineCraftClient mineCraftClient;
+    private ReentrantLock lock = new ReentrantLock();
+    private Condition syncCondition = lock.newCondition();
 
-    public PositionManager(MineCraftClient mineCraftClient) {
-        this.mineCraftClient = mineCraftClient;
+    public PositionManager(GameContext gameCtx) {
+        this.gameCtx = gameCtx;
     }
 
+    @Override
+    public void run() {
+        try {
+            lock.lock();
+            try {
+                while (gameCtx.getClientState() != ClientState.DISCONNECT) {
+                    if (gameCtx.getClientState() != ClientState.PLAY || gameCtx.getPlayerManager().isDied()
+                            || !isPlayerPostionChanged && !isPlayerLookChanged && staticClientTick < 20) {
+                        syncCondition.await();
+                        continue;
+                    }
+                    if (!isPlayerPostionChanged && !isPlayerLookChanged) {
+                        gameCtx.getServerEventQueue().add(Play_Server_PlayerPosition.builder().x(x).feetY(feetY).z(z).onGround(onGround).build());
+                    } else {
+                        gameCtx.getServerEventQueue().add(Play_Server_PlayerPositionAndRotation.builder().x(x).feetY(feetY).z(z).yaw(yaw).pitch(pitch).onGround(onGround).build());
+                    }
+                    staticClientTick = 0;
+                    isPlayerPostionChanged = false;
+                    isPlayerLookChanged = false;
+                }
+            } finally {
+                lock.unlock();
+            }
+        } catch (InterruptedException e) {
+            logger.error("PositionManager Interrupted");
+        }
+    }
+
+    @Subscribe
+    public void clientTickSubscriber(Long clientTick) {
+        lock.lock();
+        try {
+            staticClientTick++;
+            if (staticClientTick >= 20) {
+                syncCondition.signal();
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    @Subscribe
+    public void on_Play_Client_PlayerPositionAndLook(Play_Client_PlayerPositionAndLook event) {
+        lock.lock();
+        try {
+            this.x = (event.getFlags() & 0x01) > 0 ? this.x + event.getX() : event.getX();
+            this.feetY = (event.getFlags() & 0x02) > 0 ? this.feetY + event.getY() : event.getY();
+            this.z = (event.getFlags() & 0x04) > 0 ? this.z + event.getZ() : event.getZ();
+            this.yaw = (event.getFlags() & 0x08) > 0 ? this.yaw + event.getYaw() : event.getYaw();
+            this.pitch = (event.getFlags() & 0x10) > 0 ? this.pitch + event.getPitch() : event.getPitch();
+            this.onGround = ((int) (feetY) % 100) == 0;
+            if (gameCtx.getPlayerManager().isDied()) {
+                gameCtx.getPlayerManager().setDied(false);
+            }
+        } finally {
+            lock.unlock();
+        }
+        logger.info("[Player Position And Look] ({}, {}, {}, {}, {})", this.x, this.feetY, this.z, this.yaw, this.pitch);
+        gameCtx.getServerEventQueue().offer(Play_Server_TeleportConfirm.builder().teleportId(event.getTeleportId()).build());
+        gameCtx.getServerEventQueue().offer(Play_Server_PlayerPositionAndRotation.builder().x(x).feetY(feetY).z(z).yaw(yaw).pitch(pitch).onGround(onGround).build());
+        gameCtx.getServerEventQueue().offer(Play_Server_ClientStatus.builder().actionId(0).build());
+    }
+
+    /*
     public void clientTickMovement(long clientTick) throws Exception {
         playerPositionAndLookLock.lock();
         try {
@@ -104,30 +174,6 @@ public class PositionManager {
         playerPositionAndLookLock.unlock();
     }
 
-    public double getX() {
-        return x;
-    }
-
-    public double getFeetY() {
-        return feetY;
-    }
-
-    public double getZ() {
-        return z;
-    }
-
-    public float getYaw() {
-        return yaw;
-    }
-
-    public float getPitch() {
-        return pitch;
-    }
-
-    public boolean isOnGround() {
-        return onGround;
-    }
-
     @Subscribe
     public void onLoginSuccess(LoginSuccessEvent serverEvent) throws Exception {
         setPlayerPositionAndLook(0, 0, 0, 0, 0, false);
@@ -146,5 +192,6 @@ public class PositionManager {
     public String toString() {
         return MoreObjects.toStringHelper(this).add("x", x).add("feetY", feetY).add("z", z).add("yaw", yaw).add("pitch", pitch).toString();
     }
+    */
 
 }
