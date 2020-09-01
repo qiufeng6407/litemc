@@ -7,19 +7,19 @@ import pub.qiuf.litemc.common.bean.window.ChestWindow;
 import pub.qiuf.litemc.common.bean.window.Window;
 import pub.qiuf.litemc.common.bean.window.WindowAction;
 import pub.qiuf.litemc.common.bean.window.WindowType;
+import pub.qiuf.litemc.core.context.GameContext;
 import pub.qiuf.litemc.core.network.MineCraftClient;
-import pub.qiuf.litemc.protocol.client.play.ClickWindowEvent;
-import pub.qiuf.litemc.protocol.client.play.ConfirmTransactionEvent_;
-import pub.qiuf.litemc.protocol.server.play.CloseWindowEvent;
-import pub.qiuf.litemc.protocol.server.play.ConfirmTransactionEvent;
-import pub.qiuf.litemc.protocol.server.play.OpenWindowEvent;
-import pub.qiuf.litemc.protocol.server.play.SetSlotEvent;
-import pub.qiuf.litemc.protocol.server.play.WindowItemsEvent;
 
 import com.google.common.eventbus.Subscribe;
 
 public class WindowManager {
     protected final Logger logger = LoggerFactory.getLogger(getClass());
+    protected final GameContext gameCtx;
+
+    public WindowManager(GameContext gameCtx) {
+        this.gameCtx = gameCtx;
+    }
+    /*
 
     protected Window window;
     protected WindowAction windowAction;
@@ -168,5 +168,6 @@ public class WindowManager {
     public WindowAction getWindowAction() {
         return windowAction;
     }
+    */
 
 }

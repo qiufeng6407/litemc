@@ -65,10 +65,6 @@
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>2.3.2</version>
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
-					<encoding>UTF-8</encoding>
-					<charset>UTF-8</charset>
 					<archive>
 						<manifest>
 							<mainClass>pub.qiuf.litemc.app.Application</mainClass>

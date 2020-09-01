@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import pub.qiuf.litemc.common.bean.Slot;
+import pub.qiuf.litemc.common.bean.datatype.Slot;
 
 import com.flowpowered.nbt.ByteArrayTag;
 import com.flowpowered.nbt.ByteTag;
@@ -161,11 +161,6 @@ public abstract class CommUtils {
             throw new IOException("Invalid tag type: " + tag.getType() + ".");
         }
         return tagPayloadData.toByteArray();
-    }
-
-    public static byte[] encodePosition(long[] location) throws Exception {
-        long result = ((location[0] & 0x3FFFFFF) << 38) | ((location[1] & 0xFFF) << 26) | (location[2] & 0x3FFFFFF);
-        return ByteUtils.getBytes(result);
     }
 
     public static String decodeChatMessage(JsonObject json) {

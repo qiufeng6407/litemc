@@ -1,7 +1,7 @@
 package pub.qiuf.litemc.common.bean.window;
 
 import pub.qiuf.litemc.common.bean.ModeAndButton;
-import pub.qiuf.litemc.common.bean.Slot;
+import pub.qiuf.litemc.common.bean.datatype.Slot;
 
 public class WindowAction {
     private short windowId;

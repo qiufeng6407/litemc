@@ -3,7 +3,7 @@ package pub.qiuf.litemc.common.stream;
 import java.io.IOException;
 import java.util.UUID;
 
-import pub.qiuf.litemc.common.bean.Slot;
+import pub.qiuf.litemc.common.bean.datatype.Slot;
 
 import com.flowpowered.nbt.Tag;
 

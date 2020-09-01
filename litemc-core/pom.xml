@@ -45,5 +45,9 @@
 			<groupId>com.flowpowered</groupId>
 			<artifactId>flow-nbt</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+		</dependency>
 	</dependencies>
 </project>
